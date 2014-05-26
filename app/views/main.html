@@ -1,0 +1,34 @@
+<div class="header">
+  <ul class="nav nav-pills pull-right">
+    <li class="active"><a ng-href="#">Home</a></li>
+    <li><a ng-href="#">About</a></li>
+    <li><a ng-href="#">Contact</a></li>
+  </ul>
+  <h3 class="text-muted">angular waffelsdinges</h3>
+</div>
+
+<ul id="buttonList">
+  <button class="btn btn-lg btn-success" ng-click="getPlaces()">Get Places<span class="glyphicon glyphicon-ok"></span></button>
+  <button class="btn btn-lg btn-success">Get Directions<span class="glyphicon glyphicon-ok"></span></button>
+</ul>
+
+<google-map center="map.center" zoom="map.zoom" draggable="true">
+  <markers ng-if="placeMarkers.length" models="placeMarkers" coords="'self'" fit="true"></markers>
+  <window ng-if="infoWindow" coords="infoWindow" show="'true'" templateUrl="'views/infowindow.html'" templateParameter="infoWindow"></window>
+<!--   <window coords="{latitude: 40.737098, longitude: -73.9903522999999}" templateUrl="'views/infowindow.html'" show="'true'"></window> -->
+</google-map>
+
+<hr/>
+
+<ul id="placeList">
+  <li ng-repeat="place in places">
+    <strong>{{place.name}}</strong>
+    <p>{{place.address}}</p>
+    <p>{{place.hours}}</p>
+    <button class="btn btn-small" ng-click="panPlace($index)">Show marker</button>
+  </li>
+</ul>
+
+<div class="footer">
+  <p><span class="glyphicon glyphicon-heart"></span> Go get that wafel!</p>
+</div>
