@@ -123,3 +123,11 @@ body {
     margin-top: 15px;
     margin-left: -130px;
 }
+
+.selected {
+    background-color: tomato;
+}
+
+.locationItem {
+    cursor: pointer;
+}

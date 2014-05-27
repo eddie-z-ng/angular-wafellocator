@@ -9,8 +9,12 @@
 
 <ul id="buttonList">
   <button class="btn btn-lg btn-success" ng-click="getPlaces()">Get Places<span class="glyphicon glyphicon-ok"></span></button>
-  <button class="btn btn-lg btn-success">Get Directions<span class="glyphicon glyphicon-ok"></span></button>
+  <button class="btn btn-lg btn-success" ng-click="getDistanceMatrix()">Get Directions<span class="glyphicon glyphicon-ok"></span></button>
 </ul>
+
+<div class="container">
+  <input type="text" ng-model="startAddress" placeholder="Starting Address"></input>
+</div>
 
 <google-map center="map.center" pan="true" zoom="map.zoom" draggable="true">
   <markers ng-if="placeMarkers.length" models="placeMarkers" coords="'self'" fit="true" click="'click'" options="'markerOptions'">
@@ -26,22 +30,22 @@
       </div>
     </windows>
   </markers>
- <!--  <window ng-repeat="placeMarker in placeMarkers" ng-if="placeMarker" coords="placeMarker" show="placeMarker.showWindow" templateUrl="'views/infowindow.html'" templateParameter="placeMarker" closeClick="'closeClick'"></window> -->
-<!--   <window coords="{latitude: 40.737098, longitude: -73.9903522999999}" templateUrl="'views/infowindow.html'" show="'true'" closeClick="'test'"></window> -->
-
-<!--   <marker ng-repeat="marker in placeMarkers" coords="marker" click="click">
-    <window isiconvisibleonclick="true" show="showWindow" templateUrl="'views/infowindow.html'" templateParameter="place" ></window>
-  </marker> -->
 </google-map>
 
 <hr/>
 
 <ul id="placeList">
-  <li ng-repeat="place in places">
+  <li ng-repeat="place in places" ng-click="selectPlace($index)" ng-class="{selected: selectedIndex==$index }" class="locationItem">
     <strong>{{place.name}}</strong>
     <p>{{place.address}}</p>
     <p>{{place.hours}}</p>
-    <button class="btn btn-small" ng-click="panPlace($index)">Show marker</button>
+
+    <div ng-if="place.distance && place.duration">
+      {{place.distance}} | {{place.duration}}  
+    </div>
+
+    <button ng-if="markerExists($index)" class="btn btn-small" ng-click="panPlace($index)">Zoom to marker</button>
+    <p ng-if="!markerExists($index)">It appears this place doesn't exist!</p>
   </li>
 </ul>
 

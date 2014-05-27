@@ -38,7 +38,6 @@ angular.module('waffellocatorApp')
 
           locations[task.address] = parsedResult;
           storage.set("locations", locations);
-          // $localStorage.locations = JSON.stringify(locations);
 
           queue.shift();
           task.d.resolve(parsedResult);

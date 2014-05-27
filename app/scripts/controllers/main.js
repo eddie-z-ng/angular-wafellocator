@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('waffellocatorApp')
-  .controller('MainCtrl', ['$rootScope', '$scope', 'yqlAPIservice', 'geocoder',
-  	function ($rootScope, $scope, yqlAPIservice, geocoder) {
+  .controller('MainCtrl', ['$rootScope', '$scope', 'yqlAPIservice', 'geocoder', 'distanceMatrix',
+  	function ($rootScope, $scope, yqlAPIservice, geocoder, distanceMatrix) {
 	    $scope.places = [];
 	    $scope.placeMarkers = []; // markers are in a random order
 
@@ -73,7 +73,6 @@ angular.module('waffellocatorApp')
 			};
 
 			$scope.panPlace = function(index) {
-
 				for (var i = 0; i < $scope.placeMarkers.length; i++) {
 					if ($scope.placeMarkers[i].id === index) {
 						//$scope.placeMarkers[i].click();
@@ -83,6 +82,38 @@ angular.module('waffellocatorApp')
 						$scope.placeMarkers[i].showWindow = true;
 					}
 				}
+			};
+
+			$scope.markerExists = function(index) {
+				return $scope.placeMarkers.some(function(elem) {
+					return (elem.id === index);
+				});
+			};
+
+			$scope.selectPlace = function(index) {
+				$scope.selectedIndex = index;
+			};
+
+			$scope.getDistanceMatrix = function() {
+				var origins = ["160 Pearl Street, New York, NY"];
+				var destinations = $scope.places.map(function(elem) {
+					return elem.address;
+				});
+				var travelMode = google.maps.TravelMode.DRIVING;
+
+				var promise = distanceMatrix.getDistanceMatrix(origins, destinations, travelMode);
+				promise.then(function(data) {
+					console.log("Received distanceMatrix:", data);
+					var matrix = data.rows[0].elements;
+					matrix.forEach(function(elem, index) {
+						if (elem.status == "OK") {
+							$scope.places[index].distance = elem.distance.text;
+							$scope.places[index].duration = elem.duration.text;
+						}
+					});
+				}, function(status) {
+					console.log("Failed to distanceMatrix:", status);
+				});
 
 			};
 
