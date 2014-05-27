@@ -1,1 +1,10 @@
-<p>{{parameter.formattedAddress}}</p>
+      <div class="ng-scope">
+        I should not be attached to a
+        marker.
+        <p ng-non-bindable="">This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+
+        <p class="muted">My marker will stay open when the window is popped up!</p>
+      </div>
+<!-- 
+<strong>{{parameter.place.name}}</strong>
+<p>{{parameter.place.address}}</p> -->

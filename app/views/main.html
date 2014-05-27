@@ -12,10 +12,26 @@
   <button class="btn btn-lg btn-success">Get Directions<span class="glyphicon glyphicon-ok"></span></button>
 </ul>
 
-<google-map center="map.center" zoom="map.zoom" draggable="true">
-  <markers ng-if="placeMarkers.length" models="placeMarkers" coords="'self'" fit="true"></markers>
-  <window ng-if="infoWindow" coords="infoWindow" show="'true'" templateUrl="'views/infowindow.html'" templateParameter="infoWindow"></window>
-<!--   <window coords="{latitude: 40.737098, longitude: -73.9903522999999}" templateUrl="'views/infowindow.html'" show="'true'"></window> -->
+<google-map center="map.center" pan="true" zoom="map.zoom" draggable="true">
+  <markers ng-if="placeMarkers.length" models="placeMarkers" coords="'self'" fit="true" click="'click'" options="'markerOptions'">
+    <windows show="'showWindow'" closeclick="'closeClick'" options="'windowOptions'">
+      <div class="ng-scope">
+        <p ng-non-bindable="">
+          <strong>{{place.name}}</strong>
+          <span>{{place.hours}}</span>
+        </p>
+        <p ng-non-bindable="" class="muted">
+          <span>{{place.address}}</span>
+        </p>
+      </div>
+    </windows>
+  </markers>
+ <!--  <window ng-repeat="placeMarker in placeMarkers" ng-if="placeMarker" coords="placeMarker" show="placeMarker.showWindow" templateUrl="'views/infowindow.html'" templateParameter="placeMarker" closeClick="'closeClick'"></window> -->
+<!--   <window coords="{latitude: 40.737098, longitude: -73.9903522999999}" templateUrl="'views/infowindow.html'" show="'true'" closeClick="'test'"></window> -->
+
+<!--   <marker ng-repeat="marker in placeMarkers" coords="marker" click="click">
+    <window isiconvisibleonclick="true" show="showWindow" templateUrl="'views/infowindow.html'" templateParameter="place" ></window>
+  </marker> -->
 </google-map>
 
 <hr/>
