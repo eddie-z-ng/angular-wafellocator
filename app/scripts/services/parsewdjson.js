@@ -26,13 +26,12 @@ angular.module('waffellocatorApp.factories')
       // Regular expression to cut off from '<br>' and onward in the testDayHours entry in splittedFuncs
       regBr = /<br>.+/;
 
-      // skip 0th index since it is empty
       for (splittedIndex = 1; splittedIndex < splittedFuncs.length; splittedIndex++) {
         splitString = splittedFuncs[splittedIndex];
         splitArgs = splitString.split("',");
 
-        testName = splitArgs[2].replace(regTrim, '');
-        testAddress = splitArgs[1].replace(regTrim, '');
+        testName = splitArgs[2].replace(regTrim, '').replace('\\', '');
+        testAddress = splitArgs[1].replace(regTrim, '').replace('\\', '');
         // Set any address that doesn't start with a letter or number to empty
         if (testAddress.match(/^[^A-Za-z0-9]/)) {
           testAddress = '';
@@ -45,7 +44,10 @@ angular.module('waffellocatorApp.factories')
           hours: testDayHours
         };
 
-        allPlacesArray.push(spec);
+        // Add to allPlaces if valid
+        if (spec.name && spec.address && spec.hours) {
+          allPlacesArray.push(spec);
+        }
       }
       return allPlacesArray;
     };

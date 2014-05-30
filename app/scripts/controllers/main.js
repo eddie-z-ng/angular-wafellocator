@@ -9,9 +9,10 @@ angular.module('waffellocatorApp')
 	    $rootScope.$on('wdDataParsed', function(event, data) {
 	    	console.log("received event with data,", data);
 	    	$scope.places = data.places;
+	    	$scope.placeMarkers = []; // reset markers
+	    	$scope.displayedDate = data.dateSelected;
 
 	    	data.places.forEach(function(place, index, arr) {
-	    		// arr[index].showWindow = false;
 	    		var address = place.address;
 	    		var promise = geocoder.geocodeAddress(address);
 	   
@@ -60,7 +61,7 @@ angular.module('waffellocatorApp')
 
 	    });
 
-	    $scope.getPlaces = function() {
+	    $scope.getAllPlaces = function() {
     		yqlAPIservice.getAllLocations();
 	    };
 
@@ -116,5 +117,48 @@ angular.module('waffellocatorApp')
 				});
 
 			};
+
+			/* Truck Input Finder */
+
+			$scope.times = [
+				{ text: 'Morning', value: '5' },
+				{ text: 'Evening', value: '>5'}
+			];
+			$scope.timeSelected = $scope.times[0];
+
+		  $scope.today = function() {
+		    var date = new Date();
+		    var dateString = (date.getMonth()+1) + '/' + 
+			  								  date.getDate() + '/' + 
+			  									date.getFullYear();
+			  $scope.displayedDate = dateString;
+			  $scope.dateSelected = dateString; 
+		  };
+		  $scope.today();
+
+		  $scope.open = function($event) {
+		  	console.log('clicked', $event);
+		    $event.preventDefault();
+		    $event.stopPropagation();
+
+		    $scope.opened = true;
+		  };
+
+		  $scope.getSelectedPlaces = function(dateSelected, timeSelected) {
+		  	var datems = Date.parse(dateSelected);
+		  	
+		  	if(!isNaN(datems)) {
+			  	var date = new Date(datems);
+			  	var dateString = (date.getMonth()+1) + '/' + 
+			  										date.getDate() + '/' + 
+			  										date.getFullYear();
+
+			  	$scope.dateSelected = dateString;
+    			yqlAPIservice.getPostLocations(dateString, timeSelected);
+		  	} else {
+		  		console.log('error');
+		  	}
+
+		  };
 
   	}]);

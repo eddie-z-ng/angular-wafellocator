@@ -5,7 +5,8 @@ angular
     'ngResource',
     'ngRoute',
     'waffellocatorApp.factories',
-    'google-maps'
+    'google-maps',
+    'ui.bootstrap'
   ])
   .config(function ($routeProvider) {
     $routeProvider

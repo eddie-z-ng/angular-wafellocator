@@ -24,13 +24,23 @@ angular.module('waffellocatorApp.factories')
       return url;
     };
 
-    var successFunc = function (data) {
+    var successFunc = function (data, type, dateSelected) {
       // Parse the returned data
+      // console.log("Success-", data);
       if (data.query.count) {
-        var jsonData = data.query.results.json;
+        var jsonData;
+        var save = true;
+
+        if (typeof type !== undefined && type === 'post') {
+          jsonData = data.query.results.postresult.json;
+          save = false;
+        } else {
+          jsonData = data.query.results.json;
+        }
+
         if (jsonData.MSG === 'OK') {
           var places = parseWDJSON(jsonData);
-          saveAndEmitData(places);
+          saveAndEmitData(save, places, dateSelected);
         } else {
           console.log('Failed to get truck data');
         }
@@ -39,20 +49,23 @@ angular.module('waffellocatorApp.factories')
       }
     };
 
-    var saveAndEmitData = function(places) {
+    var saveAndEmitData = function(save, places, dateSelected) {
       var currentTime = new Date();
-      var data = { date: currentTime.toDateString(),
-                   hour: currentTime.getHours(),
+      var data = { saveDate: currentTime.toDateString(),
+                   saveHour: currentTime.getHours(),
+                   dateSelected: dateSelected, 
                    places: places };
 
       // Save to localStorage
-      storage.set(dataKey, data);
+      if (save) {
+        storage.set(dataKey, data);
+      }
 
       // Emit data to listeners
       $rootScope.$emit(dataEvent, data);
     };
 
-    yqlAPI.getLocations = function() {
+    var getLocations = function() {
       // GETs all current locations for today
       // NOTE: in order to specify date, kinds of locations, and time, must use the POST version
       var yqlQuery = 'select * from json where url=',
@@ -92,27 +105,32 @@ angular.module('waffellocatorApp.factories')
       return $http({
         method: 'JSONP',
         url: yqlURL
+      }).success(function(data) {
+        successFunc(data, 'post', selDate);
       });
     };
-
-    //yqlAPI.getPostLocations().success(successFunc);
 
     yqlAPI.getAllLocations = function() {
       var savedData = storage.get(dataKey);
       var currentTime = new Date();
+      var dateString = (currentTime.getMonth()+1) + '/' + 
+                        currentTime.getDate() + '/' + 
+                        currentTime.getFullYear();
 
       if (savedData && 
-          (savedData.date === currentTime.toDateString() ||
-           savedData.hour === currentTime.getHours()) ) {
+          (savedData.saveDate === currentTime.toDateString() ||
+           savedData.saveHour === currentTime.getHours()) ) {
         // Recent data exists in localStorage
         console.log('Loading data from localStorage: ', savedData);
         $timeout(function() { 
-          saveAndEmitData(savedData.places);
+          saveAndEmitData(false, savedData.places, dateString);
         }, 1);
       } else {
         // Stale data, make a call to server
         console.log('Making a call to server for data');
-        return yqlAPI.getLocations().success(successFunc);
+        return getLocations().success(function(data) {
+          successFunc(data, 'get', dateString);
+        });
       }
     };
 

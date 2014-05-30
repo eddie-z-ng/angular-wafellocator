@@ -12,6 +12,7 @@
 body {
     padding-top: 20px;
     padding-bottom: 20px;
+    font-family: 'Arimo', sans-serif;
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
@@ -66,30 +67,8 @@ body {
     margin-top: 28px;
 }
 
-/* Responsive: Portrait tablets and up */
-@media screen and (min-width: 768px) {
-    .container {
-        max-width: 730px;
-    }
 
-    /* Remove the padding we set earlier */
-    .header,
-    .marketing,
-    .footer {
-        padding-left: 0;
-        padding-right: 0;
-    }
-    /* Space out the masthead */
-    .header {
-        margin-bottom: 30px;
-    }
-    /* Remove the bottom border on the jumbotron for visual effect */
-    .jumbotron {
-        border-bottom: 0;
-    }
-}
-
-.angular-google-map-container { height: 400px; }
+.angular-google-map-container { height: 300px; }
 
 #buttonList {
     list-style: none;
@@ -130,4 +109,39 @@ body {
 
 .locationItem {
     cursor: pointer;
+}
+
+/* Twitter stream */
+
+.twitter-timeline{
+    margin: 0 auto;
+    height: 300px;
+}
+
+/* Responsive: Portrait tablets and up */
+@media screen and (min-width: 768px) {
+
+    /* Remove the padding we set earlier */
+    .header,
+    .marketing,
+    .footer {
+        padding-left: 0;
+        padding-right: 0;
+    }
+    /* Space out the masthead */
+    .header {
+        margin-bottom: 30px;
+    }
+    /* Remove the bottom border on the jumbotron for visual effect */
+    .jumbotron {
+        border-bottom: 0;
+    }
+
+    #placeList {
+        height: 350px;
+    }
+
+    .angular-google-map-container { 
+        height: 400px; 
+    }
 }
