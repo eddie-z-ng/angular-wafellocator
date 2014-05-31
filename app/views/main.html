@@ -42,7 +42,7 @@
 
         </div>
         <div class="col-sm-8">
-          <google-map center="map.center" pan="true" zoom="map.zoom" draggable="true">
+          <google-map center="map.center" pan="true" zoom="map.zoom" draggable="true" control="map">
             <markers ng-if="places.length" models="places" coords="'self'" fit="true" click="'click'" options="'markerOptions'">
               <windows show="'showWindow'" closeclick="'closeClick'" options="'windowOptions'">
                 <div class="ng-scope">

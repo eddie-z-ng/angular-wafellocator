@@ -5,14 +5,15 @@ angular.module('waffellocatorApp')
   	function ($rootScope, $scope, yqlAPIservice, geocoder, geolocator, distanceMatrix) {
 	    $scope.places = [];
 			$scope.map = {
-			    center: {
-			        latitude: 40.69847032728747,
-			        longitude: -73.9514422416687
-			    },
-			    zoom: 13
+		    center: {
+		        latitude: 40.69847032728747,
+		        longitude: -73.9514422416687
+		    },
+		    zoom: 13
 			};
 
 	    $scope.getCurrentLocation = function() {
+	    	console.log($scope.map);
 	    	geolocator.geolocate(5000).then(function(position) {
 	    		$scope.startAddress = position.lat + ',' + position.lng;
 	    	}, function(error) {
@@ -52,8 +53,9 @@ angular.module('waffellocatorApp')
 	    			};
 
 	    			markerModel.click = function() {
-	    				$scope.map.center.latitude = markerModel.latitude;
-							$scope.map.center.longitude = markerModel.longitude;
+	    				$scope.map.refresh({latitude: markerModel.latitude, longitude: markerModel.longitude});
+	    		// 		$scope.map.center.latitude = markerModel.latitude;
+							// $scope.map.center.longitude = markerModel.longitude;
 	    				markerModel.showWindow = true;
 	    				$scope.$apply();
 	    			};
@@ -93,8 +95,9 @@ angular.module('waffellocatorApp')
 		  };
 
 			$scope.panPlace = function(place) {
-				$scope.map.center.latitude = place.latitude;
-				$scope.map.center.longitude = place.longitude;
+				// $scope.map.center.latitude = place.latitude;
+				// $scope.map.center.longitude = place.longitude;
+				$scope.map.refresh({latitude: place.latitude, longitude: place.longitude});
 				$scope.map.zoom = 17;
 				place.showWindow = true;
 			};
