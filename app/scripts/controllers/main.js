@@ -1,10 +1,25 @@
 'use strict';
 
 angular.module('waffellocatorApp')
-  .controller('MainCtrl', ['$rootScope', '$scope', 'yqlAPIservice', 'geocoder', 'distanceMatrix',
-  	function ($rootScope, $scope, yqlAPIservice, geocoder, distanceMatrix) {
+  .controller('MainCtrl', ['$rootScope', '$scope', 'yqlAPIservice', 'geocoder', 'geolocator', 'distanceMatrix',
+  	function ($rootScope, $scope, yqlAPIservice, geocoder, geolocator, distanceMatrix) {
 	    $scope.places = [];
 	    $scope.placeMarkers = []; // markers are in a random order
+			$scope.map = {
+			    center: {
+			        latitude: 40.69847032728747,
+			        longitude: -73.9514422416687
+			    },
+			    zoom: 13
+			};
+
+	    $scope.getCurrentLocation = function() {
+	    	geolocator.geolocate(5000).then(function(position) {
+	    		$scope.startAddress = position.lat + ',' + position.lng;
+	    	}, function(error) {
+	    		console.log("Failed to get current location: ", error);
+	    	});
+	    };
 
 	    $rootScope.$on('wdDataParsed', function(event, data) {
 	    	console.log("received event with data,", data);
@@ -65,13 +80,21 @@ angular.module('waffellocatorApp')
     		yqlAPIservice.getAllLocations();
 	    };
 
-			$scope.map = {
-			    center: {
-			        latitude: 40.69847032728747,
-			        longitude: -73.9514422416687
-			    },
-			    zoom: 13
-			};
+	    $scope.getSelectedPlaces = function(dateSelected, timeSelected) {
+		  	var datems = Date.parse(dateSelected);
+		  	
+		  	if(!isNaN(datems)) {
+			  	var date = new Date(datems);
+			  	var dateString = (date.getMonth()+1) + '/' + 
+			  										date.getDate() + '/' + 
+			  										date.getFullYear();
+
+			  	$scope.dateSelected = dateString;
+    			yqlAPIservice.getPostLocations(dateString, timeSelected);
+		  	} else {
+		  		console.log('error');
+		  	}
+		  };
 
 			$scope.panPlace = function(index) {
 				for (var i = 0; i < $scope.placeMarkers.length; i++) {
@@ -102,9 +125,16 @@ angular.module('waffellocatorApp')
 				});
 				var travelMode = google.maps.TravelMode.DRIVING;
 
+				if ($scope.startAddress) {
+					origins[0] = $scope.startAddress;
+				}
+
 				var promise = distanceMatrix.getDistanceMatrix(origins, destinations, travelMode);
 				promise.then(function(data) {
 					console.log("Received distanceMatrix:", data);
+
+					$scope.startAddress = data.originAddresses[0];
+
 					var matrix = data.rows[0].elements;
 					matrix.forEach(function(elem, index) {
 						if (elem.status == "OK") {
@@ -113,7 +143,7 @@ angular.module('waffellocatorApp')
 						}
 					});
 				}, function(status) {
-					console.log("Failed to distanceMatrix:", status);
+					console.log("Failed to get distanceMatrix: ", status);
 				});
 
 			};
@@ -142,23 +172,6 @@ angular.module('waffellocatorApp')
 		    $event.stopPropagation();
 
 		    $scope.opened = true;
-		  };
-
-		  $scope.getSelectedPlaces = function(dateSelected, timeSelected) {
-		  	var datems = Date.parse(dateSelected);
-		  	
-		  	if(!isNaN(datems)) {
-			  	var date = new Date(datems);
-			  	var dateString = (date.getMonth()+1) + '/' + 
-			  										date.getDate() + '/' + 
-			  										date.getFullYear();
-
-			  	$scope.dateSelected = dateString;
-    			yqlAPIservice.getPostLocations(dateString, timeSelected);
-		  	} else {
-		  		console.log('error');
-		  	}
-
 		  };
 
   	}]);

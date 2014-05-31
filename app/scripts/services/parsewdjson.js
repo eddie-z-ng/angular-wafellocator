@@ -28,7 +28,7 @@ angular.module('waffellocatorApp.factories')
 
       for (splittedIndex = 1; splittedIndex < splittedFuncs.length; splittedIndex++) {
         splitString = splittedFuncs[splittedIndex];
-        splitArgs = splitString.split("',");
+        splitArgs = splitString.split('\',');
 
         testName = splitArgs[2].replace(regTrim, '').replace('\\', '');
         testAddress = splitArgs[1].replace(regTrim, '').replace('\\', '');

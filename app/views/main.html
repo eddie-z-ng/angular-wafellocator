@@ -8,12 +8,12 @@
 </div>
 
 <ul id="buttonList">
-  <button class="btn btn-lg btn-success" ng-click="getAllPlaces()">Get Places<span class="glyphicon glyphicon-ok"></span></button>
+  <button class="btn btn-lg btn-success" ng-click="getCurrentLocation()">Use Current Location<span class="glyphicon glyphicon-ok"></span></button>
   <button class="btn btn-lg btn-success" ng-click="getDistanceMatrix()">Get Directions<span class="glyphicon glyphicon-ok"></span></button>
 </ul>
 
 <div class="input-group" id="startAddress">
-  <input type="text" class="form-control" placeholder="Enter starting address">
+  <input type="text" class="form-control" placeholder="Enter starting address" ng-model="startAddress">
   <span class="input-group-btn">
     <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-flag"></span> Submit</button>
   </span>

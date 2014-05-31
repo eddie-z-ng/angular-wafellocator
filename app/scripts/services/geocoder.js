@@ -5,7 +5,7 @@
   *
   * Modified to use angularLocalStorage -- @author: Eddie Ng
   */
-angular.module('waffellocatorApp')
+angular.module('waffellocatorApp.factories')
   .factory('geocoder', ['storage', '$q', '$timeout', '$rootScope',
   function (storage, $q, $timeout, $rootScope) {
     var locations = storage.get('locations') || {};
