@@ -4,7 +4,6 @@ angular.module('waffellocatorApp')
   .controller('MainCtrl', ['$rootScope', '$scope', 'yqlAPIservice', 'geocoder', 'geolocator', 'distanceMatrix',
   	function ($rootScope, $scope, yqlAPIservice, geocoder, geolocator, distanceMatrix) {
 	    $scope.places = [];
-	    $scope.placeMarkers = []; // markers are in a random order
 			$scope.map = {
 			    center: {
 			        latitude: 40.69847032728747,
@@ -17,17 +16,16 @@ angular.module('waffellocatorApp')
 	    	geolocator.geolocate(5000).then(function(position) {
 	    		$scope.startAddress = position.lat + ',' + position.lng;
 	    	}, function(error) {
-	    		console.log("Failed to get current location: ", error);
+	    		console.log('Failed to get current location: ', error);
 	    	});
 	    };
 
 	    $rootScope.$on('wdDataParsed', function(event, data) {
-	    	console.log("received event with data,", data);
-	    	$scope.places = data.places;
-	    	$scope.placeMarkers = []; // reset markers
+	    	console.log('Received wdDataParsed event with data: ', data);
+	    	$scope.places = [];
 	    	$scope.displayedDate = data.dateSelected;
 
-	    	data.places.forEach(function(place, index, arr) {
+	    	data.places.forEach(function(place, index) {
 	    		var address = place.address;
 	    		var promise = geocoder.geocodeAddress(address);
 	   
@@ -37,7 +35,8 @@ angular.module('waffellocatorApp')
 	    				longitude: result.lng,
 	    				formattedAddress: result.formattedAddress,
 	    				id: index,
-	    				place: data.places[index],
+	    				//place: data.places[index],
+	    				place: place, 
 	    				showWindow: false,
 	    				// options passed to Google InfoWindow
 	    				markerOptions: {
@@ -53,22 +52,19 @@ angular.module('waffellocatorApp')
 	    			};
 
 	    			markerModel.click = function() {
-	    				console.log("OPENED", markerModel);
 	    				$scope.map.center.latitude = markerModel.latitude;
 							$scope.map.center.longitude = markerModel.longitude;
-							// $scope.map.zoom = 17;
 	    				markerModel.showWindow = true;
 	    				$scope.$apply();
 	    			};
 
 	    			markerModel.closeClick = function() {
-    					console.log("CLOSED");
     					markerModel.showWindow = false;
     					$scope.$apply();
 	    			};
 
-	    			//console.log('Success: ', address, result, index);
-	    			$scope.placeMarkers.push(markerModel);
+	    			$scope.places[index] = markerModel;
+
 	    		}, function(error) {
 	    			//console.log('Failed: ', address, error, index);
 	    		});
@@ -96,22 +92,15 @@ angular.module('waffellocatorApp')
 		  	}
 		  };
 
-			$scope.panPlace = function(index) {
-				for (var i = 0; i < $scope.placeMarkers.length; i++) {
-					if ($scope.placeMarkers[i].id === index) {
-						//$scope.placeMarkers[i].click();
-						$scope.map.center.latitude = $scope.placeMarkers[i].latitude;
-						$scope.map.center.longitude = $scope.placeMarkers[i].longitude;
-						$scope.map.zoom = 17;
-						$scope.placeMarkers[i].showWindow = true;
-					}
-				}
+			$scope.panPlace = function(place) {
+				$scope.map.center.latitude = place.latitude;
+				$scope.map.center.longitude = place.longitude;
+				$scope.map.zoom = 17;
+				place.showWindow = true;
 			};
 
 			$scope.markerExists = function(index) {
-				return $scope.placeMarkers.some(function(elem) {
-					return (elem.id === index);
-				});
+				return (typeof $scope.places[index] !== 'undefined');
 			};
 
 			$scope.selectPlace = function(index) {
@@ -119,9 +108,9 @@ angular.module('waffellocatorApp')
 			};
 
 			$scope.getDistanceMatrix = function() {
-				var origins = ["160 Pearl Street, New York, NY"];
+				var origins = ['160 Pearl Street, New York, NY'];
 				var destinations = $scope.places.map(function(elem) {
-					return elem.address;
+					return elem.place.address;
 				});
 				var travelMode = google.maps.TravelMode.DRIVING;
 
@@ -131,19 +120,19 @@ angular.module('waffellocatorApp')
 
 				var promise = distanceMatrix.getDistanceMatrix(origins, destinations, travelMode);
 				promise.then(function(data) {
-					console.log("Received distanceMatrix:", data);
+					console.log('Received distanceMatrix: ', data);
 
 					$scope.startAddress = data.originAddresses[0];
 
 					var matrix = data.rows[0].elements;
 					matrix.forEach(function(elem, index) {
-						if (elem.status == "OK") {
+						if (elem.status == 'OK') {
 							$scope.places[index].distance = elem.distance.text;
 							$scope.places[index].duration = elem.duration.text;
 						}
 					});
 				}, function(status) {
-					console.log("Failed to get distanceMatrix: ", status);
+					console.log('Failed to get distanceMatrix: ', status);
 				});
 
 			};
@@ -151,8 +140,8 @@ angular.module('waffellocatorApp')
 			/* Truck Input Finder */
 
 			$scope.times = [
-				{ text: 'Morning', value: '5' },
-				{ text: 'Evening', value: '>5'}
+				{ value: 'Morning' },
+				{ value: 'Evening' }
 			];
 			$scope.timeSelected = $scope.times[0];
 

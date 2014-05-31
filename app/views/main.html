@@ -27,7 +27,7 @@
     <!--MAP-->
     <div class="col-md-7">
       <div class="row">
-        <div class="col-md-4">
+        <div class="col-sm-4">
 
           <p class="input-group">
             <input id="selectedDate" type="text" class="form-control" datepicker-popup="M/dd/yyyy" ng-model="dateSelected" is-open="opened" ng-required="true" close-text="Close" />
@@ -36,14 +36,14 @@
             </span>
           </p>
 
-          <select id="selectedTime" class="form-control" ng-model="timeSelected" ng-options="time.text for time in times"></select>
+          <select id="selectedTime" class="form-control" ng-model="timeSelected" ng-options="time.value for time in times"></select>
 
           <button class="btn btn-info" ng-click="getSelectedPlaces(dateSelected, timeSelected.value)">Find 'em!<span class="glyphicon glyphicon-ok"></span></button>
 
         </div>
-        <div class="col-md-8">
+        <div class="col-sm-8">
           <google-map center="map.center" pan="true" zoom="map.zoom" draggable="true">
-            <markers ng-if="placeMarkers.length" models="placeMarkers" coords="'self'" fit="true" click="'click'" options="'markerOptions'">
+            <markers ng-if="places.length" models="places" coords="'self'" fit="true" click="'click'" options="'markerOptions'">
               <windows show="'showWindow'" closeclick="'closeClick'" options="'windowOptions'">
                 <div class="ng-scope">
                   <p ng-non-bindable="">
@@ -64,22 +64,34 @@
 
     <div class="col-md-5">
       <tabset>
-        <tab heading="Locations">
+        <tab heading="Locations" ng-init="reverse=true">
+
+          <div class="btn-group btn-group-justified">
+            <div class="btn-group">
+              <button type="button" class="btn btn-default" ng-click="predicate=''; reverse=true">Default sort</button>
+            </div>
+            <div class="btn-group">
+              <button type="button" class="btn btn-default" ng-click="predicate='place.name'; reverse=!reverse">Sort by Name</button>
+            </div>
+            <div class="btn-group">
+              <button type="button" class="btn btn-default" ng-click="predicate='distance'; reverse=!reverse">Sort by Distance</button>
+            </div>
+          </div>
 
           <ul id="placeList">
-            <li ng-repeat="place in places" ng-click="selectPlace($index)" ng-class="{selected: selectedIndex==$index }" class="locationItem">
+            <li ng-repeat="place in places | orderBy:predicate:reverse" ng-click="selectPlace($index)" ng-class="{selected: selectedIndex==$index }" class="locationItem">
               <div class="container-fluid">
                 <div class="row">
 
                   <div class="col-xs-9">
-                    <h4>{{place.name}}</h4>
+                    <h4>{{place.place.name}}</h4>
                     <small>
-                      <p>{{place.address}}</p>
-                      <p>{{displayedDate}} | {{place.hours}}</p>
+                      <p>{{place.place.address}}</p>
+                      <p>{{displayedDate}} | {{place.place.hours}}</p>
                     </small>
                   </div>
                   <div class="col-xs-3">
-                    <button ng-if="markerExists($index)" class="btn btn-small" ng-click="panPlace($index)">Zoom</button>
+                    <button ng-if="markerExists($index)" class="btn btn-small" ng-click="panPlace(place)">Zoom</button>
                     <p ng-if="!markerExists($index)">It appears this place doesn't exist!</p>
 
                     <div ng-if="place.distance && place.duration">
@@ -95,7 +107,7 @@
         </tab>
 
         <tab heading="Twitter Feed">
-          <a class="twitter-timeline" href="https://twitter.com/waffletruck" data-widget-id="472444712196898816">Tweets by @waffletruck</a>
+          <a class="twitter-timeline" href="https://twitter.com/waffletruck" data-widget-id="472444712196898816" data-related="twitterapi,twitter" data-aria-polite="assertive" width="100%" height="500" lang="EN">Tweets by @waffletruck</a>
           <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
         </tab>
       </tabset>

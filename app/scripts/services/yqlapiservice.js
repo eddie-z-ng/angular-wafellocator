@@ -86,14 +86,14 @@ angular.module('waffellocatorApp.factories')
     yqlAPI.getPostLocations = function(selDate, selTime) {
       //console.log("Doing an HTTP POST to get data for selected date, time, and location types");
       // selectedTruck -> 0 = all, 1 = trucks, 2 = carts, 3 = stores
-      // selectedTme -> 5 = morning, >5 = evening
+      // selectedTime -> expect 0 for morning, 1 for evening ['5' = morning, '>5' = evening]
       // selectedDate -> date string
-      var yqlQuery = "select * from jsonpost where url=",
-          baseURL = "http://www.wafelsanddinges.com/trucks/searchtrucks.php",
+      var yqlQuery = 'select * from jsonpost where url=',
+          baseURL = 'http://www.wafelsanddinges.com/trucks/searchtrucks.php',
           //selectedDate = "9/27/2013",
           //selectedTime = ">5",
           selectedDate = selDate.replace(/-/g, '/'),
-          selectedTime = selTime,
+          selectedTime = selTime === 'Morning' ? '5' : '>5',
           selectedTruck = 0,
           postData = "date=" + selectedDate + "&time=" + selectedTime + "&truck_id=" + selectedTruck,
           constructedURL = "'" + baseURL + "' and postdata='" + postData + "'",
@@ -101,7 +101,7 @@ angular.module('waffellocatorApp.factories')
           yqlURL;
 
       yqlURL = yqlURLizer(fullURL);
-      console.log('post: yqlURL is ', yqlURL);
+      console.log('POST: yqlURL is ', yqlURL);
       return $http({
         method: 'JSONP',
         url: yqlURL
