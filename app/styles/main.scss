@@ -13,7 +13,7 @@ body {
     padding-top: 20px;
     padding-bottom: 20px;
     font-family: 'Arimo', sans-serif;
-    background: url('../images/ricepaper_v3.png') 0 0 repeat;
+    background: url('/images/ricepaper_v3.png') 0 0 repeat;
     // background: url('../images/congruent_pentagon.png') 0 0 repeat;
 }
 
@@ -107,7 +107,7 @@ body {
 }
 
 .selected {
-    background: url('../images/congruent_pentagon.png') 0 0 repeat;
+    background: url('/images/congruent_pentagon.png') 0 0 repeat;
 }
 
 .selectedTravel {
@@ -127,19 +127,19 @@ body {
 }
 
 .glyphicon-driving {
-    background: url('../images/glyphicons_005_car.png') 5px 7px no-repeat;
+    background: url('/images/glyphicons_005_car.png') 5px 7px no-repeat;
 }
 
 .glyphicon-transit {
-    background: url('../images/glyphicons_014_train.png') 8px 5px no-repeat;
+    background: url('/images/glyphicons_014_train.png') 8px 5px no-repeat;
 }
 
 .glyphicon-bicycling {
-    background: url('../images/glyphicons_306_bicycle.png') 1px 8px no-repeat;
+    background: url('/images/glyphicons_306_bicycle.png') 1px 8px no-repeat;
 }
 
 .glyphicon-walking {
-    background: url('../images/glyphicons_003_user.png') 7px 7px no-repeat;
+    background: url('/images/glyphicons_003_user.png') 7px 7px no-repeat;
 }
 
 #optionSelect {
@@ -157,6 +157,12 @@ body {
     // }
     &>button {
         float: right;
+    }
+}
+
+#tabset {
+    .active a {
+        background: url('/images/congruent_pentagon.png') 0 0 repeat;
     }
 }
 
