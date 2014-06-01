@@ -13,6 +13,8 @@ body {
     padding-top: 20px;
     padding-bottom: 20px;
     font-family: 'Arimo', sans-serif;
+    background: url('../images/ricepaper_v3.png') 0 0 repeat;
+    // background: url('../images/congruent_pentagon.png') 0 0 repeat;
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
@@ -77,8 +79,9 @@ body {
 }
 
 #placeList {
+    // background: url('../images/rockywall.png') 0 0 repeat;
     margin-top: 10px;
-    border: 2px solid #aaa;
+    // border: 2px solid #aaa;
     list-style: none;
     padding: 0;
     height: 200px;
@@ -86,8 +89,8 @@ body {
 
     li {
         padding: 20px;
-        border: 2px solid #aaa;
-        box-shadow: 4px 4px #fff;
+        border: 2px solid #ddd;
+        // box-shadow: 4px 4px #fff;
     }
 }
 
@@ -104,11 +107,11 @@ body {
 }
 
 .selected {
-    background-color: tomato;
+    background: url('../images/congruent_pentagon.png') 0 0 repeat;
 }
 
-.locationItem {
-    cursor: pointer;
+.selectedTravel {
+    background-color: #5bc0de !important;
 }
 
 /* Twitter stream */
@@ -116,6 +119,49 @@ body {
 .twitter-timeline{
     margin: 0 auto;
     height: 300px;
+}
+
+.directionsLinks {
+    width: 36px;
+    height: 36px;
+}
+
+.glyphicon-driving {
+    background: url('../images/glyphicons_005_car.png') 5px 7px no-repeat;
+}
+
+.glyphicon-transit {
+    background: url('../images/glyphicons_014_train.png') 8px 5px no-repeat;
+}
+
+.glyphicon-bicycling {
+    background: url('../images/glyphicons_306_bicycle.png') 1px 8px no-repeat;
+}
+
+.glyphicon-walking {
+    background: url('../images/glyphicons_003_user.png') 7px 7px no-repeat;
+}
+
+#optionSelect {
+    border: 2px solid #ddd;
+    padding: 10px;
+
+    h3 {
+        text-align: center;
+    }
+
+    // &>button {
+    //     position: absolute;
+    //     right: 40px;
+    //     top: 60px;
+    // }
+    &>button {
+        float: right;
+    }
+}
+
+#startAddress {
+    margin-bottom: 10px;
 }
 
 /* Responsive: Portrait tablets and up */
@@ -138,7 +184,7 @@ body {
     }
 
     #placeList {
-        height: 330px;
+        height: 300px;
     }
 
     .angular-google-map-container { 

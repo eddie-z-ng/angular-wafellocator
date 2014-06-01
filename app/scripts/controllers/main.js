@@ -3,6 +3,10 @@
 angular.module('waffellocatorApp')
   .controller('MainCtrl', ['$rootScope', '$scope', 'yqlAPIservice', 'geocoder', 'geolocator', 'distanceMatrix',
   	function ($rootScope, $scope, yqlAPIservice, geocoder, geolocator, distanceMatrix) {
+	    var directionsService = new google.maps.DirectionsService();
+	    var directionsDisplay = new google.maps.DirectionsRenderer({draggable: true});
+	    var defaultFromAddress = '160 Pearl Street, New York, NY';
+
 	    $scope.places = [];
 			$scope.map = {
 		    center: {
@@ -12,10 +16,39 @@ angular.module('waffellocatorApp')
 		    zoom: 13
 			};
 
+			/****************/
+			/* Truck Input Finder */
+
+			$scope.times = [
+				{ value: 'Morning' },
+				{ value: 'Evening' }
+			];
+			$scope.timeSelected = $scope.times[0];
+
+		  $scope.today = function() {
+		    var date = new Date();
+		    var dateString = (date.getMonth()+1) + '/' + 
+			  								  date.getDate() + '/' + 
+			  									date.getFullYear();
+			  $scope.displayedDate = dateString;
+			  $scope.dateSelected = date; 
+		  };
+		  $scope.today();
+
+		  $scope.open = function($event) {
+		  	console.log('clicked', $event);
+		    $event.preventDefault();
+		    $event.stopPropagation();
+
+		    $scope.opened = !$scope.opened;
+		  };
+			/****************/
+
 	    $scope.getCurrentLocation = function() {
-	    	console.log($scope.map);
 	    	geolocator.geolocate(5000).then(function(position) {
 	    		$scope.startAddress = position.lat + ',' + position.lng;
+	    		$scope.getDistanceMatrix();
+
 	    	}, function(error) {
 	    		console.log('Failed to get current location: ', error);
 	    	});
@@ -53,9 +86,8 @@ angular.module('waffellocatorApp')
 	    			};
 
 	    			markerModel.click = function() {
-	    				$scope.map.refresh({latitude: markerModel.latitude, longitude: markerModel.longitude});
-	    		// 		$scope.map.center.latitude = markerModel.latitude;
-							// $scope.map.center.longitude = markerModel.longitude;
+	    				$scope.map.refresh({latitude: markerModel.latitude, 
+	    					longitude: markerModel.longitude});
 	    				markerModel.showWindow = true;
 	    				$scope.$apply();
 	    			};
@@ -88,6 +120,10 @@ angular.module('waffellocatorApp')
 			  										date.getFullYear();
 
 			  	$scope.dateSelected = dateString;
+			  	
+			  	// Clear out all places
+			  	$scope.places = [];
+    			
     			yqlAPIservice.getPostLocations(dateString, timeSelected);
 		  	} else {
 		  		console.log('error');
@@ -95,8 +131,8 @@ angular.module('waffellocatorApp')
 		  };
 
 			$scope.panPlace = function(place) {
-				// $scope.map.center.latitude = place.latitude;
-				// $scope.map.center.longitude = place.longitude;
+				$scope.selectPlace(place);
+				
 				$scope.map.refresh({latitude: place.latitude, longitude: place.longitude});
 				$scope.map.zoom = 17;
 				place.showWindow = true;
@@ -106,20 +142,26 @@ angular.module('waffellocatorApp')
 				return (typeof $scope.places[index] !== 'undefined');
 			};
 
-			$scope.selectPlace = function(index) {
-				$scope.selectedIndex = index;
+			$scope.selectPlace = function(place) {
+				$scope.selectedPlace = place;
 			};
 
 			$scope.getDistanceMatrix = function() {
-				var origins = ['160 Pearl Street, New York, NY'];
+				// This is when a user resubmits a new address request so
+				// need to reset relevant scope fields here
+
+        $scope.directionsShow = false;
+        $scope.selectedPlace = null;
+        $scope.selectedTravelOption = null;
+        $scope.awaitingDirections = false;
+
+				$scope.startAddress = $scope.startAddress || defaultFromAddress;
+
+				var origins = [$scope.startAddress];
 				var destinations = $scope.places.map(function(elem) {
 					return elem.place.address;
 				});
 				var travelMode = google.maps.TravelMode.DRIVING;
-
-				if ($scope.startAddress) {
-					origins[0] = $scope.startAddress;
-				}
 
 				var promise = distanceMatrix.getDistanceMatrix(origins, destinations, travelMode);
 				promise.then(function(data) {
@@ -130,8 +172,8 @@ angular.module('waffellocatorApp')
 					var matrix = data.rows[0].elements;
 					matrix.forEach(function(elem, index) {
 						if (elem.status == 'OK') {
-							$scope.places[index].distance = elem.distance.text;
-							$scope.places[index].duration = elem.duration.text;
+							$scope.places[index].distanceText = elem.distance.text;
+							$scope.places[index].distanceValue = elem.distance.value;
 						}
 					});
 				}, function(status) {
@@ -140,30 +182,53 @@ angular.module('waffellocatorApp')
 
 			};
 
-			/* Truck Input Finder */
+			/* Directions finding */
 
-			$scope.times = [
-				{ value: 'Morning' },
-				{ value: 'Evening' }
-			];
-			$scope.timeSelected = $scope.times[0];
+      $scope.travelOptions = ['driving', 'transit', 'bicycling', 'walking'];
+      $scope.selectedTravelOption = 'driving';
 
-		  $scope.today = function() {
-		    var date = new Date();
-		    var dateString = (date.getMonth()+1) + '/' + 
-			  								  date.getDate() + '/' + 
-			  									date.getFullYear();
-			  $scope.displayedDate = dateString;
-			  $scope.dateSelected = dateString; 
-		  };
-		  $scope.today();
+			$scope.setDirections = function (place, travelOption) {
+        $scope.directionsShow = false;
+        $scope.awaitingDirections = true;
 
-		  $scope.open = function($event) {
-		  	console.log('clicked', $event);
-		    $event.preventDefault();
-		    $event.stopPropagation();
+				$scope.selectPlace(place);
 
-		    $scope.opened = true;
-		  };
+				directionsDisplay.setMap($scope.map.getGMap());
+				directionsDisplay.setPanel(document.getElementById('directions'));
+
+				$scope.startAddress = $scope.startAddress || defaultFromAddress;
+				$scope.selectedTravelOption = travelOption;
+
+
+        var selectedMode = travelOption.toUpperCase() || 'DRIVING',
+            from = $scope.startAddress,
+            request = {
+                origin: from,
+                destination: place.place.address,
+                travelMode: selectedMode,
+                provideRouteAlternatives: true,
+                unitSystem: google.maps.UnitSystem.METRIC,
+                optimizeWaypoints: true
+            };
+        if (selectedMode === 'TRANSIT') {
+            request.transitOptions = {
+              departureTime: new Date()
+            };
+        }
+
+        directionsService.route(request, function (response, status) {
+        	console.log("Directions: ", response, status);
+          if (status === google.maps.DirectionsStatus.OK) {
+              directionsDisplay.setDirections(response);
+              $scope.directionsShow = true;
+              $scope.awaitingDirections = false;
+
+          } else {
+              // toastr.error(status);
+              $scope.awaitingDirections = false;
+              console.log(status);
+          }
+        });
+			};
 
   	}]);

@@ -4,7 +4,6 @@
  * @author: Eddie Ng
  */
 
-
 angular.module('waffellocatorApp.factories')
   .factory('yqlAPIservice', ['$rootScope', '$http', '$timeout', 'storage', 'parseWDJSON', 
   function ($rootScope, $http, $timeout, storage, parseWDJSON) {
@@ -75,7 +74,7 @@ angular.module('waffellocatorApp.factories')
 
       yqlURL = yqlURLizer(fullURL);
 
-      console.log('get: yqlURL is ', yqlURL);
+      //console.log('get: yqlURL is ', yqlURL);
 
       return $http({
         method: 'JSONP',
