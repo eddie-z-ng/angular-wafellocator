@@ -34,7 +34,6 @@ module.exports = function (grunt) {
       },
       pages: {
         options: {
-          //remote: 'git@github.com:example_user/example_webapp.git',
           remote: 'git@github.com:wardsng/angular-wafellocator.git',
           branch: 'gh-pages'
         }
@@ -251,7 +250,7 @@ module.exports = function (grunt) {
       html: ['<%= yeoman.dist %>/{,*/}*.html'],
       css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
       options: {
-        assetsDirs: ['<%= yeoman.dist %>']
+        assetsDirs: ['<%= yeoman.dist %>', '<%= yeoman.dist %>/images']
       }
     },
 
@@ -344,6 +343,11 @@ module.exports = function (grunt) {
           cwd: '.tmp/images',
           dest: '<%= yeoman.dist %>/images',
           src: ['generated/*']
+        },  {
+          expand: true,
+          cwd: '<%= yeoman.app %>/bower_components/bootstrap/dist/fonts/',
+          src: ['**'],
+          dest: '<%= yeoman.dist %>/fonts/' // Glyphicons copy hack
         }]
       },
       styles: {
