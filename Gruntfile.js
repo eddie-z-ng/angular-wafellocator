@@ -38,13 +38,13 @@ module.exports = function (grunt) {
           branch: 'gh-pages'
         }
       },
-      // heroku: {
-      //   options: {
+      heroku: {
+        options: {
+          remote: 'git@heroku.com:wafellocator.git',
       //     remote: 'git@heroku.com:example-heroku-webapp-1988.git',
-      //     branch: 'master',
-      //     tag: pkg.version
-      //   }
-      // },
+          branch: 'master'
+        }
+      },
       local: {
         options: {
           remote: '../',
