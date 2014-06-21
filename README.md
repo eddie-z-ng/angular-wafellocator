@@ -2,6 +2,8 @@ Wafel Locator
 ===========
 A web-app for finding all Wafels & Dinges locations in NYC and getting directions to them!
 
+See it at [wafellocator](http://wafellocator.herokuapp.com/)
+
 Overview
 ----
 * Client-side cross-server request to www.wafelsanddinges.com for truck data on any date using YQL
