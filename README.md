@@ -31,7 +31,7 @@ Screenshots
 
 Challenges
 ----
-* Deconstructing and parsing truck data from www.wafelsanddinges.com. The data is not JSON but seems to be straight JavaScript code that is ``eval``'d' by their server
+* Deconstructing and parsing truck data from www.wafelsanddinges.com. The data is not JSON but seems to be straight JavaScript code that is ``eval``'d' by their client code
 * Implementing Google Map, markers, and info windows using (angular-google-maps)[https://github.com/nlaplante/angular-google-maps]
 * Writing YQL querying, Google Maps distance matrices, Google maps directions as Angular module services
 * Piecing this all together in AngularJS
